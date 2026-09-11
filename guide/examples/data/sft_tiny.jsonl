@@ -1,0 +1,4 @@
+{"conversations":[{"role":"user","content":"MiniMind의 목적은 무엇인가요?"},{"role":"assistant","content":"작은 언어 모델의 학습과 추론 과정을 이해하기 쉽게 보여주는 것입니다."}]}
+{"conversations":[{"role":"user","content":"RMSNorm을 한 문장으로 설명해 주세요."},{"role":"assistant","content":"입력 벡터의 RMS 크기를 이용해 안정적으로 정규화하는 층입니다."}]}
+{"conversations":[{"role":"user","content":"GQA는 왜 사용하나요?"},{"role":"assistant","content":"여러 query head가 더 적은 KV head를 공유해 KV cache와 계산 부담을 줄이기 위해 사용합니다."}]}
+{"conversations":[{"role":"user","content":"이 tiny 데이터로 모델 품질을 재현할 수 있나요?"},{"role":"assistant","content":"아니요. 이 데이터는 CPU에서 코드 경로와 데이터 계약을 확인하기 위한 fixture일 뿐입니다."}]}

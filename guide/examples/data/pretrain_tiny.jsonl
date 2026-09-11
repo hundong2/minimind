@@ -1,0 +1,4 @@
+{"text":"MiniMind는 작은 Decoder-only 언어 모델의 전체 학습 흐름을 보여준다."}
+{"text":"사전학습에서는 문맥을 보고 다음 토큰을 예측한다."}
+{"text":"RMSNorm, RoPE, GQA와 SwiGLU는 모델을 이루는 핵심 구성 요소다."}
+{"text":"이 파일은 CPU 코드 경로 확인용 tiny fixture이며 모델 품질 재현용 데이터가 아니다."}

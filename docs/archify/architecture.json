@@ -1,0 +1,392 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "MiniMind 학습·추론 코드 아키텍처",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/hundong2/minimind.git",
+      "revision": "a3c7b01cc004d5de86aea961f20bf1e638e7c09e"
+    },
+    "views": [
+      {
+        "id": "training-path",
+        "label": "학습 주 경로",
+        "focus": [
+          "jsonl-data",
+          "datasets",
+          "trainers",
+          "model-core",
+          "checkpoints"
+        ],
+        "note": "JSONL 입력이 tensor batch와 모델 연산을 거쳐 checkpoint가 되는 경로입니다."
+      },
+      {
+        "id": "rl-path",
+        "label": "강화학습 생성 경로",
+        "focus": [
+          "trainers",
+          "rollout-engine",
+          "model-core",
+          "sglang"
+        ],
+        "note": "PPO·GRPO·Agentic RL이 로컬 또는 SGLang 생성 backend를 선택합니다."
+      },
+      {
+        "id": "serving-path",
+        "label": "추론·서빙 경로",
+        "focus": [
+          "checkpoints",
+          "tokenizer",
+          "serving",
+          "clients"
+        ],
+        "note": "저장된 가중치와 chat template이 CLI·Web·OpenAI 호환 API에 연결됩니다."
+      }
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [20, 116],
+    "cols": 5,
+    "gapX": 52,
+    "gapY": 76,
+    "cellW": 154,
+    "cellH": 70
+  },
+  "components": [
+    {
+      "id": "jsonl-data",
+      "type": "external",
+      "label": "JSONL 학습 데이터",
+      "sublabel": "pretrain · SFT · preference",
+      "row": 1,
+      "col": 0,
+      "sources": [
+        {
+          "path": "dataset/dataset.md",
+          "line": 1,
+          "label": "데이터 명세"
+        },
+        {
+          "path": "dataset/lm_dataset.py",
+          "line": 6,
+          "label": "load_dataset"
+        }
+      ]
+    },
+    {
+      "id": "tokenizer",
+      "type": "backend",
+      "label": "MiniMind Tokenizer",
+      "sublabel": "BPE · chat template",
+      "row": 0,
+      "col": 1,
+      "sources": [
+        {
+          "path": "model/tokenizer_config.json",
+          "line": 1,
+          "label": "Tokenizer 설정"
+        },
+        {
+          "path": "trainer/trainer_utils.py",
+          "line": 119,
+          "label": "Tokenizer 로드"
+        }
+      ]
+    },
+    {
+      "id": "datasets",
+      "type": "backend",
+      "label": "Dataset Pipeline",
+      "sublabel": "mask · padding · labels",
+      "row": 1,
+      "col": 1,
+      "sources": [
+        {
+          "path": "dataset/lm_dataset.py",
+          "line": 37,
+          "label": "PretrainDataset"
+        },
+        {
+          "path": "dataset/lm_dataset.py",
+          "line": 58,
+          "label": "SFTDataset"
+        },
+        {
+          "path": "dataset/lm_dataset.py",
+          "line": 122,
+          "label": "DPODataset"
+        }
+      ]
+    },
+    {
+      "id": "trainers",
+      "type": "backend",
+      "label": "Training Pipelines",
+      "sublabel": "Pretrain · SFT · DPO · RL",
+      "row": 1,
+      "col": 2,
+      "sources": [
+        {
+          "path": "trainer/train_pretrain.py",
+          "line": 24,
+          "label": "Pretrain loop"
+        },
+        {
+          "path": "trainer/train_full_sft.py",
+          "line": 24,
+          "label": "SFT loop"
+        },
+        {
+          "path": "trainer/train_dpo.py",
+          "line": 53,
+          "label": "DPO loop"
+        }
+      ]
+    },
+    {
+      "id": "model-core",
+      "type": "backend",
+      "label": "MiniMind Model Core",
+      "sublabel": "RoPE · GQA · Dense/MoE",
+      "row": 1,
+      "col": 3,
+      "sources": [
+        {
+          "path": "model/model_minimind.py",
+          "line": 10,
+          "label": "MiniMindConfig"
+        },
+        {
+          "path": "model/model_minimind.py",
+          "line": 91,
+          "label": "Attention"
+        },
+        {
+          "path": "model/model_minimind.py",
+          "line": 234,
+          "label": "CausalLM"
+        }
+      ]
+    },
+    {
+      "id": "rollout-engine",
+      "type": "backend",
+      "label": "Rollout Engine",
+      "sublabel": "Torch · SGLang backend",
+      "row": 2,
+      "col": 2,
+      "sources": [
+        {
+          "path": "trainer/rollout_engine.py",
+          "line": 51,
+          "label": "Backend 계약"
+        },
+        {
+          "path": "trainer/rollout_engine.py",
+          "line": 64,
+          "label": "Torch backend"
+        },
+        {
+          "path": "trainer/rollout_engine.py",
+          "line": 99,
+          "label": "SGLang backend"
+        }
+      ]
+    },
+    {
+      "id": "sglang",
+      "type": "external",
+      "label": "SGLang Server",
+      "sublabel": "선택적 원격 생성 backend",
+      "row": 2,
+      "col": 3,
+      "sources": [
+        {
+          "path": "trainer/rollout_engine.py",
+          "line": 99,
+          "label": "SGLang client"
+        },
+        {
+          "path": "trainer/rollout_engine.py",
+          "line": 209,
+          "label": "Backend 선택"
+        }
+      ]
+    },
+    {
+      "id": "checkpoints",
+      "type": "database",
+      "label": "저장 아티팩트",
+      "sublabel": "model-only · resume",
+      "row": 1,
+      "col": 4,
+      "sources": [
+        {
+          "path": "trainer/train_pretrain.py",
+          "line": 61,
+          "label": "추론용 out/*.pth 저장"
+        },
+        {
+          "path": "trainer/trainer_utils.py",
+          "line": 63,
+          "label": "model·resume 저장 API"
+        },
+        {
+          "path": "trainer/trainer_utils.py",
+          "line": 103,
+          "label": "*_resume.pth 저장"
+        }
+      ]
+    },
+    {
+      "id": "serving",
+      "type": "backend",
+      "label": "추론 진입점",
+      "sublabel": "CLI · FastAPI · Streamlit",
+      "row": 0,
+      "col": 3,
+      "sources": [
+        {
+          "path": "eval_llm.py",
+          "line": 12,
+          "label": "CLI model init"
+        },
+        {
+          "path": "scripts/serve_openai_api.py",
+          "line": 105,
+          "label": "Streaming generate"
+        },
+        {
+          "path": "scripts/web_demo.py",
+          "line": 312,
+          "label": "Streamlit entry"
+        }
+      ]
+    },
+    {
+      "id": "clients",
+      "type": "external",
+      "label": "사용자·API Client",
+      "sublabel": "chat · OpenAI protocol",
+      "row": 0,
+      "col": 4,
+      "sources": [
+        {
+          "path": "scripts/serve_openai_api.py",
+          "line": 50,
+          "label": "요청 schema"
+        },
+        {
+          "path": "scripts/serve_openai_api.py",
+          "line": 179,
+          "label": "Chat endpoint"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "load-jsonl",
+      "from": "jsonl-data",
+      "to": "datasets",
+      "label": "load_dataset(JSON)",
+      "labelAt": [211, 336]
+    },
+    {
+      "id": "tokenize-samples",
+      "from": "tokenizer",
+      "to": "datasets",
+      "label": "encode · mask",
+      "labelAt": [314, 190]
+    },
+    {
+      "id": "batch-to-trainer",
+      "from": "datasets",
+      "to": "trainers",
+      "label": "DataLoader batch"
+    },
+    {
+      "id": "optimize-model",
+      "from": "trainers",
+      "to": "model-core",
+      "label": "forward · backward",
+      "variant": "emphasis",
+      "labelAt": [623, 258]
+    },
+    {
+      "id": "persist-weights",
+      "from": "model-core",
+      "to": "checkpoints",
+      "label": "별도 파일 저장",
+      "labelAt": [738, 244]
+    },
+    {
+      "id": "load-for-inference",
+      "from": "checkpoints",
+      "to": "serving",
+      "label": "model-only .pth",
+      "labelAt": [800, 215]
+    },
+    {
+      "id": "stream-response",
+      "from": "serving",
+      "to": "clients",
+      "label": "stream · JSON"
+    },
+    {
+      "id": "template-for-serving",
+      "from": "tokenizer",
+      "to": "serving",
+      "label": "chat template"
+    },
+    {
+      "id": "request-rollouts",
+      "from": "trainers",
+      "to": "rollout-engine",
+      "label": "prompt batch",
+      "labelAt": [492, 336]
+    },
+    {
+      "id": "local-generation",
+      "from": "rollout-engine",
+      "to": "model-core",
+      "label": "Torch generate"
+    },
+    {
+      "id": "remote-generation",
+      "from": "rollout-engine",
+      "to": "sglang",
+      "label": "generation API",
+      "variant": "dashed",
+      "labelAt": [595, 516]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "학습 경계",
+      "items": [
+        "Dataset이 단계별 mask와 label을 만들고 Trainer가 최적화합니다.",
+        "공통 MiniMindForCausalLM이 Dense와 MoE 구성을 모두 실행합니다."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "강화학습 경계",
+      "items": [
+        "RolloutEngine이 생성 backend를 Torch 또는 SGLang으로 분리합니다.",
+        "PPO·GRPO·Agentic RL은 생성 결과와 reward를 학습 loop에 되돌립니다."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "저장·서빙 경계",
+      "items": [
+        "model-only 가중치와 resume metadata는 서로 다른 로컬 파일로 저장됩니다.",
+        "CLI, Streamlit, FastAPI가 같은 모델·tokenizer 자산을 다시 사용합니다."
+      ]
+    }
+  ]
+}

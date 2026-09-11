@@ -27,9 +27,11 @@
 
 <div align="center">
 
-中文 | [English](./README_en.md)
+中文 | [English](./README_en.md) | [한국어](./README_ko.md)
 
 </div>
+
+> 学习资料：[한국어 단계별 학습 가이드](./guide/README.md) · [代码架构分析](./docs/archify/README.md)
 
 * 此开源项目旨在完全从 0 开始，仅用 3 块钱成本与 2 小时训练时间，即可训练出规模约为 64M 的超小语言模型 MiniMind。
 * MiniMind 系列极其轻量，主线最小版本体积约为 GPT-3 的 $\frac{1}{2700}$，力求让普通个人 GPU 也能快速完成训练与复现。
